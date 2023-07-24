@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+import 'env/env.dart';
 import 'gamepage.dart';
 
 void main() {
@@ -40,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String textInput = '';
   String textOutput = '';
 
-  final apiKey = 'YOUR_API_KEY';
+  final apiKey = Env.key; //APIキー
 
   @override
   Widget build(BuildContext context) {
