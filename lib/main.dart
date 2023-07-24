@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'gamepage.dart';
 
 void main() {
@@ -35,7 +38,10 @@ class MyHomePage extends StatefulWidget {
 
 //上のやつを継承したクラス、画面を作るところ
 class _MyHomePageState extends State<MyHomePage> {
-  String userInput = '';
+  String textInput = '';
+  String textOutput = '';
+
+  final apiKey = 'YOUR_API_KEY';
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onChanged: (text) {
                     //入力があった時に実行textに格納
                     setState(() {
-                      userInput = text;
+                      textInput = text;
                     });
                   },
                   decoration: const InputDecoration(
@@ -89,14 +95,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          var textOutput = await callAPI(textInput);
           //ボタンを押したら画面遷移
           Navigator.push(
             //画面はスタックになっていて重ねていくらしい
             context, //使い方はNavigetorで調べたらすぐわかると思う
             MaterialPageRoute(
               builder: (context) => GamePage(
-                inputText: userInput, //引数入れてコンストラクタで実行。引数を次のページで格納
+                inputText: textInput, //引数入れてコンストラクタで実行。引数を次のページで格納
+                outputText: textOutput,
               ),
             ),
           );
@@ -104,5 +112,30 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.navigate_next),
       ),
     );
+  }
+
+  Future<String> callAPI(String apiText) async {
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {'role': 'user', 'content': '$apiTextと似た一般名詞を一つ出力せよ'}
+          ]
+        },
+      ),
+    );
+    final body = response.bodyBytes;
+    final jsonString = utf8.decode(body);
+    final json = jsonDecode(jsonString);
+    final choices = json['choices'];
+    final content = choices[0]['message']['content'];
+
+    return content;
   }
 }

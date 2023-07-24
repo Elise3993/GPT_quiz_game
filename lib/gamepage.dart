@@ -1,13 +1,18 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:gpt_word_quiz/resultpage.dart';
+import 'package:flutter_application_1/resultpage.dart';
 
 //多分変数とか受け取って入れておくとこ全部finalをつけるらしい
 //継承したクラスでwiget.(変数名)で取り出せる
 class GamePage extends StatefulWidget {
   const GamePage(
-      {super.key, required this.inputText}); //引数を受け取る一つ目はよくわからんけど二つ目で変数を格納
+      {super.key,
+      required this.inputText,
+      required this.outputText}); //引数を受け取る一つ目はよくわからんけど二つ目で変数を格納
 
   final String inputText; //ここに入る
+  final String outputText;
 
   @override
   State<StatefulWidget> createState() => _GamePageState();
@@ -15,6 +20,19 @@ class GamePage extends StatefulWidget {
 
 //上のやつを継承したクラス、画面を作るところ
 class _GamePageState extends State<GamePage> {
+  dynamic gptOutput = '';
+
+  final apiKey = 'YOUR_API_KEY';
+
+  @override
+  void initState() {
+    super.initState();
+    Future(() async {
+      gptOutput = await callApiGameText(widget.inputText, widget.outputText);
+      print(gptOutput);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,12 +45,12 @@ class _GamePageState extends State<GamePage> {
         child: Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Expanded(
+            Expanded(
               flex: 1,
               child: Center(
                 child: Text(
-                  'ChatGPTが出力するやつ', //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
-                  style: TextStyle(
+                  'Output : $gptOutput', //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
+                  style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue),
@@ -100,7 +118,7 @@ class _GamePageState extends State<GamePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text('${widget.inputText}でない'),
+                    child: Text('${widget.outputText}でない'),
                   )
                 ],
               )),
@@ -110,5 +128,34 @@ class _GamePageState extends State<GamePage> {
         ),
       ),
     );
+  }
+
+  Future<String> callApiGameText(String apiText_1, String apiText_2) async {
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              'role': 'user',
+              'content':
+                  '$apiText_1と似た一般名詞を一つ出力せよ' //$apiText_1の説明を書くこと。$apiText_1と$apiText_2を出力に入れないこと。どちらの単語かわからないようにすること。60トークン以上80トークン以下で出力
+            }
+          ]
+        },
+      ),
+    );
+    final body = response.bodyBytes;
+    final jsonString = utf8.decode(body);
+    final json = jsonDecode(jsonString);
+    final choices = json['choices'];
+    final content = choices[0]['message']['content'];
+    print(content);
+    return content;
   }
 }
