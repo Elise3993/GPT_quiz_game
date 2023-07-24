@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class ResultPage extends StatefulWidget {
   const ResultPage({super.key, required this.ans});
 
-  final String ans; //どっちを選択したかの情報、仮でtrue/falseがStringで返ってくる
+  final String ans; //どっちを選択したかの情報、仮でsame/differentがStringで返ってくる
 
   @override
   State<StatefulWidget> createState() => _ResultPageState();
