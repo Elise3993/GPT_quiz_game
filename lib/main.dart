@@ -96,15 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           var textOutput = await callAPI(textInput);
+          var chatGPTText = await callApiGameText(textInput, textOutput);
           //ボタンを押したら画面遷移
           Navigator.push(
             //画面はスタックになっていて重ねていくらしい
             context, //使い方はNavigetorで調べたらすぐわかると思う
             MaterialPageRoute(
               builder: (context) => GamePage(
-                inputText: textInput, //引数入れてコンストラクタで実行。引数を次のページで格納
-                outputText: textOutput,
-              ),
+                  inputText: textInput, //引数入れてコンストラクタで実行。引数を次のページで格納
+                  outputText: textOutput,
+                  gptText: chatGPTText),
             ),
           );
         },
@@ -135,6 +136,35 @@ class _MyHomePageState extends State<MyHomePage> {
     final choices = json['choices'];
     final content = choices[0]['message']['content'];
 
+    return content;
+  }
+
+  Future<String> callApiGameText(String apiText_1, String apiText_2) async {
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              'role': 'user',
+              'content':
+                  '$apiText_1の説明を書くこと。$apiText_1と$apiText_2を出力に入れないこと。どちらの単語かわからないようにすること。60トークン以上80トークン以下で出力'
+            }
+          ]
+        },
+      ),
+    );
+    final body = response.bodyBytes;
+    final jsonString = utf8.decode(body);
+    final json = jsonDecode(jsonString);
+    final choices = json['choices'];
+    final content = choices[0]['message']['content'];
+    print(content);
     return content;
   }
 }

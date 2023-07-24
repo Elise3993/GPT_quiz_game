@@ -1,5 +1,5 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+//import 'dart:convert';
+//import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:gpt_word_quiz/resultpage.dart';
 
@@ -9,10 +9,12 @@ class GamePage extends StatefulWidget {
   const GamePage(
       {super.key,
       required this.inputText,
-      required this.outputText}); //引数を受け取る一つ目はよくわからんけど二つ目で変数を格納
+      required this.outputText,
+      required this.gptText}); //引数を受け取る一つ目はよくわからんけど二つ目で変数を格納
 
   final String inputText; //ここに入る
   final String outputText;
+  final String gptText;
 
   @override
   State<StatefulWidget> createState() => _GamePageState();
@@ -20,18 +22,18 @@ class GamePage extends StatefulWidget {
 
 //上のやつを継承したクラス、画面を作るところ
 class _GamePageState extends State<GamePage> {
-  dynamic gptOutput = '';
+  //String gptOutput = '';
 
-  final apiKey = 'YOUR_API_KEY';
+  //final apiKey = 'YOUR_API_KEY';
 
-  @override
+  /*@override
   void initState() {
     super.initState();
     Future(() async {
       gptOutput = await callApiGameText(widget.inputText, widget.outputText);
       print(gptOutput);
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,7 @@ class _GamePageState extends State<GamePage> {
               flex: 1,
               child: Center(
                 child: Text(
-                  'Output : $gptOutput', //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
+                  widget.gptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
                   style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -69,7 +71,7 @@ class _GamePageState extends State<GamePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ResultPage(
-                            ans: 'true',
+                            ans: 'same',
                           ),
                         ),
                       );
@@ -98,7 +100,7 @@ class _GamePageState extends State<GamePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ResultPage(
-                            ans: 'false',
+                            ans: 'different',
                           ),
                         ),
                       );
@@ -130,7 +132,7 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Future<String> callApiGameText(String apiText_1, String apiText_2) async {
+  /*Future<String> callApiGameText(String apiText_1, String apiText_2) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: <String, String>{
@@ -157,5 +159,5 @@ class _GamePageState extends State<GamePage> {
     final content = choices[0]['message']['content'];
     print(content);
     return content;
-  }
+  }*/
 }
