@@ -35,6 +35,16 @@ class _GamePageState extends State<GamePage> {
     });
   }*/
 
+  // 伏字処理後のgptのテキスト
+  String hidedGptText = ""; 
+
+  @override
+  void initState(){
+    super.initState();
+
+    hidedGptText = hideKeyWord(widget.inputText,widget.gptText);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +61,7 @@ class _GamePageState extends State<GamePage> {
               flex: 1,
               child: Center(
                 child: Text(
-                  widget.gptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
+                  hidedGptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
                   style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -130,6 +140,10 @@ class _GamePageState extends State<GamePage> {
         ),
       ),
     );
+  }
+
+  String hideKeyWord(String KeyWord,String gptText){
+    return gptText.replaceAll(KeyWord, "***");
   }
 
   /*Future<String> callApiGameText(String apiText_1, String apiText_2) async {
