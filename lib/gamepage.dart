@@ -53,7 +53,9 @@ class _GamePageState extends State<GamePage> {
     _outputText = widget.outputText;
     _ansText = widget.ansText;
 
-    print(widget.ansText);
+    // デバッグ用に表示
+    print("GPTが出力した単語 : " + widget.outputText);
+    print("答えの単語 : " + widget.ansText);
     hidedGptText = hideKeyWord(widget.inputText,widget.gptText);
   }
 
@@ -148,7 +150,7 @@ class _GamePageState extends State<GamePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text('${widget.outputText}でない'),
+                    child: Text('${widget.inputText}でない'),
                   )
                 ],
               )),
