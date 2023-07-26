@@ -116,6 +116,44 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<String> testcallAPI(String apiText) async {
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {'role': 'user', 'content': '$apiTextと似た一般名詞を一つ出力せよ'}
+          ]
+        },
+      ),
+    );
+    final body = response.bodyBytes;
+    final jsonString = utf8.decode(body);
+    final json = jsonDecode(jsonString);
+    final choices = json['choices'];
+    final content = choices[0]['message']['content'];
+
+    return content;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   Future<String> callAPI(String apiText) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
