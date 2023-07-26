@@ -44,6 +44,7 @@ class _GamePageState extends State<GamePage> {
   void initState(){
     super.initState();
 
+    print(widget.ansText);
     hidedGptText = hideKeyWord(widget.inputText,widget.gptText);
   }
 
