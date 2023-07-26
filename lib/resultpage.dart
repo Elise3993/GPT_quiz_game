@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 //多分変数とか受け取って入れておくとこ全部finalをつけるらしい
 //継承したクラスでwiget.(変数名)で取り出せる
 class ResultPage extends StatefulWidget {
-  const ResultPage({super.key, required this.ans});
+  const ResultPage({super.key, 
+  required this.isCorrect,
+  required this.inputText,
+  required this.outputText,
+  required this.ansText});
 
-  final String ans; //どっちを選択したかの情報、仮でsame/differentがStringで返ってくる
+  final bool isCorrect;
+  final String inputText; // プレイヤーが入力した単語
+  final String outputText; // GPTが出力した単語
+  final String ansText; // 選択された単語
 
   @override
   State<StatefulWidget> createState() => _ResultPageState();
@@ -13,6 +20,7 @@ class ResultPage extends StatefulWidget {
 
 //上のやつを継承したクラス、画面を作るところ
 class _ResultPageState extends State<ResultPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,18 +32,25 @@ class _ResultPageState extends State<ResultPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            const Expanded(flex: 1, child: SizedBox(height: 16)),
+            const Expanded(
+              flex: 1, 
+              child: SizedBox(height: 16)
+            ),
             Expanded(
               flex: 1,
               child: Center(
-                child: Text(
-                  '選択された方：${widget.ans}', //ここで正解不正解を表示
-                  style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue),
-                ),
+                child: ifResult(widget.isCorrect),
               ),
+            ),
+            // ここより以下マジで適当なのでUI考える人よろしくお願いします
+            Text(
+              'あなたが入力した単語 : ${widget.inputText}'
+            ),
+            Text(
+              'GPTが出力した単語 : ${widget.outputText}'
+            ),
+            Text(
+              'GPTが説明した単語 : ${widget.ansText}'
             ),
             Expanded(
               flex: 1,
@@ -66,5 +81,28 @@ class _ResultPageState extends State<ResultPage> {
         ),
       ),
     );
+  }
+
+  Widget ifResult(bool isCorrect){
+    if(isCorrect){
+      return const Text(
+       '正解！', //ここで正解不正解を表示
+        style: TextStyle(
+          fontSize: 36,
+          fontWeight: FontWeight.bold,
+          color: Colors.red,
+        ),
+      );
+    }
+    else{
+      return const Text(
+       '不正解...', //ここで正解不正解を表示
+        style: TextStyle(
+          fontSize: 36,
+          fontWeight: FontWeight.bold,
+          color: Colors.blue,
+        ),
+      );
+    }
   }
 }
