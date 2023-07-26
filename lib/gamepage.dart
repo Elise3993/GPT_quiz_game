@@ -10,11 +10,13 @@ class GamePage extends StatefulWidget {
       {super.key,
       required this.inputText,
       required this.outputText,
+      required this.ansText,
       required this.gptText}); //引数を受け取る一つ目はよくわからんけど二つ目で変数を格納
 
-  final String inputText; //ここに入る
-  final String outputText;
-  final String gptText;
+  final String inputText; // プレイヤーの入力ワード
+  final String outputText; // GPTの出力ワード
+  final String ansText; // 正解として選ばれたワード
+  final String gptText; // GPTがansTextについて説明した文章
 
   @override
   State<StatefulWidget> createState() => _GamePageState();
