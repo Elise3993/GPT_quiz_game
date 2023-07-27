@@ -2,6 +2,7 @@
 //import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:gpt_word_quiz/resultpage.dart';
+import 'dart:math' as math;
 
 //多分変数とか受け取って入れておくとこ全部finalをつけるらしい
 //継承したクラスでwiget.(変数名)で取り出せる
@@ -56,7 +57,9 @@ class _GamePageState extends State<GamePage> {
     // デバッグ用に表示
     print("GPTが出力した単語 : " + widget.outputText);
     print("答えの単語 : " + widget.ansText);
-    hidedGptText = hideKeyWord(widget.inputText,widget.gptText);
+    //入力and出力単語隠し
+    hidedGptText = hideKeyWord(widget.inputText,widget.outputText,widget.gptText);
+
   }
 
   @override
@@ -167,8 +170,16 @@ class _GamePageState extends State<GamePage> {
   }
 
   // GPTの説明テキスト中のキーワードをすべて***で隠す
-  String hideKeyWord(String KeyWord,String gptText){
-    return gptText.replaceAll(KeyWord, "***");
+  String hideKeyWord(String input_str, String output_str, String gptText){
+    final random = math.Random();
+    final masks = ['***', '+++', '###', '!!!', '%%%', '&&&', '@@@'];
+    final input_index = random.nextInt(masks.length);
+    var output_index = random.nextInt(masks.length);
+    while(input_index == output_index){
+      output_index = random.nextInt(masks.length);
+    }
+    var input_maskedText = gptText.replaceAll(input_str,masks[input_index]);
+    return  input_maskedText.replaceAll(output_str,masks[output_index]);
   }
 
   // 正誤チェックを行う
