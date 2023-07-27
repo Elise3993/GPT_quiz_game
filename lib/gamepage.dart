@@ -10,11 +10,13 @@ class GamePage extends StatefulWidget {
       {super.key,
       required this.inputText,
       required this.outputText,
+      required this.ansText,
       required this.gptText}); //引数を受け取る一つ目はよくわからんけど二つ目で変数を格納
 
-  final String inputText; //ここに入る
-  final String outputText;
-  final String gptText;
+  final String inputText; // プレイヤーの入力ワード
+  final String outputText; // GPTの出力ワード
+  final String ansText; // 正解として選ばれたワード
+  final String gptText; // GPTがansTextについて説明した文章
 
   @override
   State<StatefulWidget> createState() => _GamePageState();
@@ -38,10 +40,22 @@ class _GamePageState extends State<GamePage> {
   // 伏字処理後のgptのテキスト
   String hidedGptText = ""; 
 
+  // 次に送りたい変数
+  late String _inputText; // プレイヤーの入力ワード
+  late String _outputText; // GPTの出力ワード
+  late String _ansText; 
+
   @override
   void initState(){
     super.initState();
 
+    _inputText = widget.inputText;
+    _outputText = widget.outputText;
+    _ansText = widget.ansText;
+
+    // デバッグ用に表示
+    print("GPTが出力した単語 : " + widget.outputText);
+    print("答えの単語 : " + widget.ansText);
     hidedGptText = hideKeyWord(widget.inputText,widget.gptText);
   }
 
@@ -80,8 +94,11 @@ class _GamePageState extends State<GamePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ResultPage(
-                            ans: 'same',
+                          builder: (context) => ResultPage(
+                            isCorrect: checkPlayersAnswer(_inputText, _ansText),
+                            inputText: _inputText,
+                            outputText: _outputText,
+                            ansText: _ansText,
                           ),
                         ),
                       );
@@ -109,8 +126,11 @@ class _GamePageState extends State<GamePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ResultPage(
-                            ans: 'different',
+                          builder: (context) => ResultPage(
+                            isCorrect: checkPlayersAnswer(_outputText, _ansText),
+                            inputText: _inputText,
+                            outputText: _outputText,
+                            ansText: _ansText,
                           ),
                         ),
                       );
@@ -130,7 +150,7 @@ class _GamePageState extends State<GamePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text('${widget.outputText}でない'),
+                    child: Text('${widget.inputText}でない'),
                   )
                 ],
               )),
@@ -142,8 +162,16 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
+  // GPTの説明テキスト中のキーワードをすべて***で隠す
   String hideKeyWord(String KeyWord,String gptText){
     return gptText.replaceAll(KeyWord, "***");
+  }
+
+  // 正誤チェックを行う
+  // chosenTextはプレイヤーが選んだ選択の単語
+  // ansTextはランダムに選ばれた正解の単語
+  bool checkPlayersAnswer(String chosenText,String ansText){
+      return chosenText == ansText;
   }
 
   /*Future<String> callApiGameText(String apiText_1, String apiText_2) async {
@@ -175,3 +203,4 @@ class _GamePageState extends State<GamePage> {
     return content;
   }*/
 }
+

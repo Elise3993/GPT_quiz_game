@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math' as math;
 
 import 'env/env.dart';
 import 'gamepage.dart';
@@ -97,8 +98,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          // ChatGPTのAPIを利用
+
+          // GPTから類似の単語を取得
           var textOutput = await callAPI(textInput);
-          var chatGPTText = await callApiGameText(textInput, textOutput);
+          // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
+          var textAns= chooseWord(textInput, textOutput);
+          // GPTからtextAnsについて説名してもらう
+          var chatGPTText = await callApiGameText(textInput, textOutput,textAns);
           //ボタンを押したら画面遷移
           Navigator.push(
             //画面はスタックになっていて重ねていくらしい
@@ -107,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) => GamePage(
                   inputText: textInput, //引数入れてコンストラクタで実行。引数を次のページで格納
                   outputText: textOutput,
+                  ansText: textAns,
                   gptText: chatGPTText),
             ),
           );
@@ -115,43 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-  Future<String> testcallAPI(String apiText) async {
-    final response = await http.post(
-      Uri.parse('https://api.openai.com/v1/chat/completions'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $apiKey',
-      },
-      body: jsonEncode(
-        <String, dynamic>{
-          "model": "gpt-3.5-turbo",
-          "messages": [
-            {'role': 'user', 'content': '$apiTextと似た一般名詞を一つ出力せよ'}
-          ]
-        },
-      ),
-    );
-    final body = response.bodyBytes;
-    final jsonString = utf8.decode(body);
-    final json = jsonDecode(jsonString);
-    final choices = json['choices'];
-    final content = choices[0]['message']['content'];
-
-    return content;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   Future<String> callAPI(String apiText) async {
@@ -179,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return content;
   }
 
-  Future<String> callApiGameText(String apiText_1, String apiText_2) async {
+  Future<String> callApiGameText(String apiText_1, String apiText_2,String ansText) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: <String, String>{
@@ -193,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
             {
               'role': 'user',
               'content':
-                  '$apiText_1の説明を書くこと。$apiText_1と$apiText_2を出力に入れないこと。どちらの単語かわからないようにすること。60トークン以上80トークン以下で出力'
+                  '$ansTextの説明を書くこと。$apiText_1と$apiText_2を出力に入れないこと。どちらの単語かわからないようにすること。60トークン以上80トークン以下で出力'
             }
           ]
         },
@@ -207,4 +178,18 @@ class _MyHomePageState extends State<MyHomePage> {
     print(content);
     return content;
   }
+
+  // プレイヤーが入力した単語と
+  // GPTが出力した単語の
+  // 2種類の内のどちらか選ぶ
+  String chooseWord(String inputText,String outputText){
+    var random = math.Random();
+
+    String ansText = ""; 
+    if(random.nextBool()) ansText = inputText; 
+    else ansText = outputText;
+
+    return ansText;
+  }
+
 }
