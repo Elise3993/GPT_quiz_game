@@ -39,15 +39,15 @@ class _GamePageState extends State<GamePage> {
   }*/
 
   // 伏字処理後のgptのテキスト
-  String hidedGptText = ""; 
+  String hidedGptText = "";
 
   // 次に送りたい変数
   late String _inputText; // プレイヤーの入力ワード
   late String _outputText; // GPTの出力ワード
-  late String _ansText; 
+  late String _ansText;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     _inputText = widget.inputText;
@@ -58,8 +58,8 @@ class _GamePageState extends State<GamePage> {
     print("GPTが出力した単語 : " + widget.outputText);
     print("答えの単語 : " + widget.ansText);
     //入力and出力単語隠し
-    hidedGptText = hideKeyWord(widget.inputText,widget.outputText,widget.gptText);
-
+    hidedGptText =
+        hideKeyWord(widget.inputText, widget.outputText, widget.gptText);
   }
 
   @override
@@ -75,16 +75,28 @@ class _GamePageState extends State<GamePage> {
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              flex: 1,
-              child: Scrollbar(
-                child: SingleChildScrollView(
-                child: Center(
-                  child: Text(
-                    hidedGptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue),
+              flex: 4,
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  border: Border.all(
+                    color: Colors.black38,
+                    width: 4,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Text(
+                        hidedGptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
+                        style: const TextStyle(
+                          fontSize: 24,
+                          // fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -118,7 +130,7 @@ class _GamePageState extends State<GamePage> {
                         fontWeight: FontWeight.bold,
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                          horizontal: 32, vertical: 24),
                       side: const BorderSide(
                           color: Color.fromARGB(255, 255, 156, 7), width: 2),
                       shape: RoundedRectangleBorder(
@@ -127,14 +139,15 @@ class _GamePageState extends State<GamePage> {
                     ),
                     child: Text('${widget.inputText}である'),
                   ),
-                  const SizedBox(width: 8), //空白みたいなやつ
+                  const SizedBox(width: 22), //空白みたいなやつ
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ResultPage(
-                            isCorrect: checkPlayersAnswer(_outputText, _ansText),
+                            isCorrect:
+                                checkPlayersAnswer(_outputText, _ansText),
                             inputText: _inputText,
                             outputText: _outputText,
                             ansText: _ansText,
@@ -150,7 +163,7 @@ class _GamePageState extends State<GamePage> {
                         fontWeight: FontWeight.bold,
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                          horizontal: 32, vertical: 24),
                       side: const BorderSide(
                           color: Color.fromARGB(255, 255, 156, 7), width: 2),
                       shape: RoundedRectangleBorder(
@@ -158,11 +171,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     child: Text('${widget.inputText}でない'),
-                  )
+                  ),
                 ],
-              )),
+              ),
+              ),
             ),
-            const Expanded(flex: 1, child: SizedBox(height: 16)),
           ],
         ),
       ),
@@ -170,26 +183,26 @@ class _GamePageState extends State<GamePage> {
   }
 
   // GPTの説明テキスト中のキーワードをすべて***で隠す
-  String hideKeyWord(String input_str, String output_str, String gptText){
+  String hideKeyWord(String input_str, String output_str, String gptText) {
     final random = math.Random();
     final masks = ['***', '+++', '###', '!!!', '%%%', '&&&', '@@@'];
     final input_index = random.nextInt(masks.length);
     var output_index = random.nextInt(masks.length);
-    while(input_index == output_index){
+    while (input_index == output_index) {
       output_index = random.nextInt(masks.length);
     }
-    var input_maskedText = gptText.replaceAll(input_str,masks[input_index]);
-    return  input_maskedText.replaceAll(output_str,masks[output_index]);
+    var input_maskedText = gptText.replaceAll(input_str, masks[input_index]);
+    return input_maskedText.replaceAll(output_str, masks[output_index]);
   }
 
   // 正誤チェックを行う
   // chosenTextはプレイヤーが選んだ選択の単語
   // ansTextはランダムに選ばれた正解の単語
-  bool checkPlayersAnswer(String chosenText,String ansText){
-      return chosenText == ansText;
+  bool checkPlayersAnswer(String chosenText, String ansText) {
+    return chosenText == ansText;
   }
 
-  /*Future<String> callApiGameText(String apiText_1, String apiText_2) async {
+/*Future<String> callApiGameText(String apiText_1, String apiText_2) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: <String, String>{
@@ -218,4 +231,3 @@ class _GamePageState extends State<GamePage> {
     return content;
   }*/
 }
-

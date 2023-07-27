@@ -64,10 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Center(
                 //ここでは１：１：１
                 child: Text(
-                  'お題を入力してね', //ここに文字${変数名}で変数を表示できる
+                  '単語を入力してね', //ここに文字${変数名}で変数を表示できる
                   style: TextStyle(
                       //文字の色とか大きさとか。条件分岐、変数で扱うこともできるらしい
-                      fontSize: 24,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue),
                 ),
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
+        onPressed: _isLoading ? null : () async {
           // ChatGPTのAPIを利用
           setState(() {
             _isLoading = true; // リクエスト開始時にローディングインジケータを表示

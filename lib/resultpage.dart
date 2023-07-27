@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 //多分変数とか受け取って入れておくとこ全部finalをつけるらしい
 //継承したクラスでwiget.(変数名)で取り出せる
 class ResultPage extends StatefulWidget {
-  const ResultPage({super.key, 
-  required this.isCorrect,
-  required this.inputText,
-  required this.outputText,
-  required this.ansText});
+  const ResultPage(
+      {super.key,
+      required this.isCorrect,
+      required this.inputText,
+      required this.outputText,
+      required this.ansText});
 
   final bool isCorrect;
   final String inputText; // プレイヤーが入力した単語
@@ -20,11 +21,11 @@ class ResultPage extends StatefulWidget {
 
 //上のやつを継承したクラス、画面を作るところ
 class _ResultPageState extends State<ResultPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Result Page'),
       ),
@@ -32,28 +33,44 @@ class _ResultPageState extends State<ResultPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            const Expanded(
-              flex: 1, 
-              child: SizedBox(height: 16)
-            ),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Center(
                 child: ifResult(widget.isCorrect),
               ),
             ),
             // ここより以下マジで適当なのでUI考える人よろしくお願いします
-            Text(
-              'あなたが入力した単語 : ${widget.inputText}'
-            ),
-            Text(
-              'GPTが出力した単語 : ${widget.outputText}'
-            ),
-            Text(
-              'GPTが説明した単語 : ${widget.ansText}'
-            ),
             Expanded(
               flex: 1,
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black38,
+                    width: 4,
+                  ),
+                    borderRadius: BorderRadius.circular(8),
+                ),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(
+                      'あなたが入力した単語 : ${widget.inputText}',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(
+                      'GPTが出力した単語 : ${widget.outputText}',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(
+                      'GPTが説明した単語 : ${widget.ansText}',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ]),
+            ),
+            ),
+            Expanded(
+              flex: 2,
               child: Center(
                   child: ElevatedButton(
                 onPressed: () {
@@ -67,7 +84,7 @@ class _ResultPageState extends State<ResultPage> {
                     fontWeight: FontWeight.bold,
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
                   side: const BorderSide(
                       color: Color.fromARGB(255, 255, 156, 7), width: 2),
                   shape: RoundedRectangleBorder(
@@ -83,22 +100,21 @@ class _ResultPageState extends State<ResultPage> {
     );
   }
 
-  Widget ifResult(bool isCorrect){
-    if(isCorrect){
+  Widget ifResult(bool isCorrect) {
+    if (isCorrect) {
       return const Text(
-       '正解！', //ここで正解不正解を表示
+        '正解!!', //ここで正解不正解を表示
         style: TextStyle(
-          fontSize: 36,
+          fontSize: 80,
           fontWeight: FontWeight.bold,
           color: Colors.red,
         ),
       );
-    }
-    else{
+    } else {
       return const Text(
-       '不正解...', //ここで正解不正解を表示
+        '不正解...', //ここで正解不正解を表示
         style: TextStyle(
-          fontSize: 36,
+          fontSize: 80,
           fontWeight: FontWeight.bold,
           color: Colors.blue,
         ),
