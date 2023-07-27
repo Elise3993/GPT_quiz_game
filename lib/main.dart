@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
-
+  
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -42,7 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String textInput = '';
   String textOutput = '';
-
+  bool _isLoading = false; // ローディングインジケータの表示状態を管理
   final apiKey = Env.key; //APIキー
 
   @override
@@ -72,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.blue),
                 ),
               ),
+              
             ),
             Expanded(
               flex: 1,
@@ -99,13 +100,19 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           // ChatGPTのAPIを利用
-
+          setState(() {
+            _isLoading = true; // リクエスト開始時にローディングインジケータを表示
+          });
           // GPTから類似の単語を取得
           var textOutput = await callAPI(textInput);
           // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
           var textAns= chooseWord(textInput, textOutput);
           // GPTからtextAnsについて説名してもらう
           var chatGPTText = await callApiGameText(textInput, textOutput,textAns);
+
+          setState(() {
+            _isLoading = false; // リクエスト開始時にローディングインジケータを表示
+          });
           //ボタンを押したら画面遷移
           Navigator.push(
             //画面はスタックになっていて重ねていくらしい
@@ -121,6 +128,15 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: const Icon(Icons.navigate_next),
       ),
+      // ぐるぐるを表示する条件に応じて、この位置を調整することも可能です。
+      // 例えば、`floatingActionButtonLocation` を `FloatingActionButtonLocation.endFloat` にすると、画面下部にぐるぐるが表示されます。
+      // デフォルトは `FloatingActionButtonLocation.endFloat` です。
+      persistentFooterButtons: _isLoading
+          ? [
+              // ローディング中はぐるぐるを表示
+              CircularProgressIndicator(),
+            ]
+          : null,
     );
   }
 
