@@ -73,13 +73,17 @@ class _GamePageState extends State<GamePage> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Center(
-                child: Text(
-                  hidedGptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
-                  style: const TextStyle(
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                child: Center(
+                  child: Text(
+                    hidedGptText, //ここにchatgptの文章を入れる予定、${変数名}で表示すればいいと思う
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue),
+                    ),
+                  ),
                 ),
               ),
             ),
