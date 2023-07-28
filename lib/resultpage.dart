@@ -34,14 +34,14 @@ class _ResultPageState extends State<ResultPage> {
         child: Column(
           children: <Widget>[
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Center(
                 child: ifResult(widget.isCorrect),
               ),
             ),
             // ここより以下マジで適当なのでUI考える人よろしくお願いします
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -56,15 +56,15 @@ class _ResultPageState extends State<ResultPage> {
                   children: <Widget>[
                     Text(
                       'あなたが入力した単語 : ${widget.inputText}',
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 16),
                     ),
                     Text(
                       'GPTが出力した単語 : ${widget.outputText}',
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 16),
                     ),
                     Text(
                       'GPTが説明した単語 : ${widget.ansText}',
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 16),
                     ),
                   ]),
             ),
