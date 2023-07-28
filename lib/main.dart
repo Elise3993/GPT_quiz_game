@@ -106,6 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
                 // GPTから類似の単語を取得
                 var textOutput = await callAPI(textInput);
+                // textOutputを""で囲まれている部分で切り出す
+                textOutput = substrKeyWord(textOutput);
                 // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
                 var textAns = chooseWord(textInput, textOutput);
                 // GPTからtextAnsについて説名してもらう
@@ -265,5 +267,16 @@ Only One Output is Need
       ansText = outputText;
 
     return ansText;
+  }
+
+  // 「出力:"OOO"」の形式で渡されるデータを
+  // OOOだけ切り取って返却
+  String substrKeyWord(String outputText){
+    int left = outputText.indexOf('"');
+    int right = outputText.lastIndexOf('"');
+
+    String res = outputText.substring(left+1,right);
+    print(res);
+    return res;
   }
 }
