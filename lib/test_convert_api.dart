@@ -21,8 +21,7 @@ class _MyAppState extends State<MyApp> {
     final data = {'text': _textController.text};
 
     final response = await http.post(Uri.parse(apiUrl),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(data));
+        headers: {"Content-Type": "application/json"}, body: json.encode(data));
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);
