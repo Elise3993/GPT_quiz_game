@@ -2,7 +2,9 @@
 //import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:gpt_word_quiz/resultpage.dart';
+import 'dart:convert';
 import 'dart:math' as math;
+import 'package:http/http.dart' as http;
 
 //多分変数とか受け取って入れておくとこ全部finalをつけるらしい
 //継承したクラスでwiget.(変数名)で取り出せる
@@ -58,8 +60,15 @@ class _GamePageState extends State<GamePage> {
     print("GPTが出力した単語 : " + widget.outputText);
     print("答えの単語 : " + widget.ansText);
     //入力and出力単語隠し
-    hidedGptText = hideKeyWord(widget.inputText,widget.outputText,widget.gptText);
 
+    hideKeyWord(widget.inputText, widget.outputText, widget.gptText).then((result) {
+      setState(() {
+        hidedGptText = result;
+      });
+      print("隠したGPTの単語: " + hidedGptText);
+    // Now you can use 'hidedGptText' as a regular String in the rest of your code.
+  });
+    //print("text"+hidedGptText);
   }
 
   @override
@@ -170,17 +179,53 @@ class _GamePageState extends State<GamePage> {
   }
 
   // GPTの説明テキスト中のキーワードをすべて***で隠す
-  String hideKeyWord(String input_str, String output_str, String gptText){
+  Future<String> hideKeyWord(String input_str, String output_str, String gptText) async{
     final random = math.Random();
+    const apiUrl = 'http://127.0.0.1:5000/convert'; // ローカルホストの場合
+    final data_input = {'text': input_str};
+    final data_output = {'text': output_str};
+  
     final masks = ['***', '+++', '###', '!!!', '%%%', '&&&', '@@@'];
     final input_index = random.nextInt(masks.length);
     var output_index = random.nextInt(masks.length);
     while(input_index == output_index){
       output_index = random.nextInt(masks.length);
     }
+
     var input_maskedText = gptText.replaceAll(input_str,masks[input_index]);
-    return  input_maskedText.replaceAll(output_str,masks[output_index]);
+    
+    final response_input = await http.post(Uri.parse(apiUrl),
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(data_input));
+
+    if (response_input.statusCode == 200) {
+      final result_input_str = json.decode(response_input.body);
+      input_maskedText =  input_maskedText.replaceAll(result_input_str["katakana"], masks[input_index]);
+      input_maskedText =  input_maskedText.replaceAll(result_input_str["hiragana"], masks[input_index]);
+      //print(response.body);
+      //print(result);
+    } else {
+      //rint("エラー: ${response.statusCode}");
+    }
+
+    input_maskedText = input_maskedText.replaceAll(output_str,masks[output_index]);
+
+    final response_output = await http.post(Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(data_output));
+
+    if (response_output.statusCode == 200) {
+      final result_output_str = json.decode(response_input.body);
+      input_maskedText =  input_maskedText.replaceAll(result_output_str["katakana"], masks[input_index]);
+      input_maskedText =  input_maskedText.replaceAll(result_output_str["hiragana"], masks[input_index]);
+      //print(response.body);
+      //print(result);
+    } else {
+      //rint("エラー: ${response.statusCode}");
+    }
+    return  input_maskedText;
   }
+
 
   // 正誤チェックを行う
   // chosenTextはプレイヤーが選んだ選択の単語
