@@ -27,6 +27,7 @@ class GamePage extends StatefulWidget {
 //上のやつを継承したクラス、画面を作るところ
 class _GamePageState extends State<GamePage> {
   // 伏字処理後のgptのテキスト
+  bool _isLoading = false; // ローディングインジケータの表示状態を管理
   String hidedGptText = "";
   final apiKey = Env.key;
 
@@ -182,16 +183,27 @@ class _GamePageState extends State<GamePage> {
                         ),
                         const SizedBox(width: 22), //空白みたいなやつ
                         ElevatedButton(
-                          onPressed: () async {
-                            hidedGptText = await callApiHintText(_inputText,
-                                _outputText, _ansText, hidedGptText);
-                            setState(() {
-                              hidedGptText;
-                            });
-                          },
+                          onPressed: _isLoading
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    _isLoading =
+                                        true; // リクエスト開始時にローディングインジケータを表示
+                                  });
+                                  hidedGptText = await callApiHintText(
+                                      _inputText,
+                                      _outputText,
+                                      _ansText,
+                                      hidedGptText);
+                                  setState(() {
+                                    hidedGptText;
+                                    _isLoading = false;
+                                  });
+                                },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: Color.fromARGB(255, 245, 161, 26),
+                            backgroundColor:
+                                const Color.fromARGB(255, 245, 161, 26),
                             textStyle: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -216,6 +228,12 @@ class _GamePageState extends State<GamePage> {
           ],
         ),
       ),
+      persistentFooterButtons: _isLoading
+          ? [
+              // ローディング中はぐるぐるを表示
+              const CircularProgressIndicator(),
+            ]
+          : null,
     );
   }
 
