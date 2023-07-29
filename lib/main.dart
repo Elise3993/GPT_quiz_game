@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-//多分変数とか受け取って入れておくとこ全部finalをつけるらしい
 //継承したクラスでwiget.(変数名)で取り出せる
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -60,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Expanded(
               //Expandedは余白の割り当てみたいなやつ
-              flex: 1, //ぜんぶのExpandでflex:flex:flexの比率で割り当てられる
+              flex: 3, //ぜんぶのExpandでflex:flex:flexの比率で割り当てられる
               child: Center(
                 //ここでは１：１：１
                 child: Text(
@@ -92,7 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            const Expanded(flex: 1, child: SizedBox(height: 16)),
+            const Expanded(
+              flex: 3,
+              child: Center(
+                child: Text(
+                  '1.ChatGPTが入力された単語と似た単語を出力します。\n2.入力された単語と出力された単語のどちらかについて説明された文章が表示されます。\n3.どっちの単語を説明しているかを当てよう！',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -106,6 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
                 // GPTから類似の単語を取得
                 var textOutput = await callAPI(textInput);
+
+                // var textOutput = '出力:"「音楽」"';
+
                 // textOutputを""で囲まれている部分で切り出す
                 textOutput = substrKeyWord(textOutput);
                 // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
@@ -262,22 +275,45 @@ Only One Output is Need
     var random = math.Random();
 
     String ansText = "";
-    if (random.nextBool())
+    if (random.nextBool()) {
       ansText = inputText;
-    else
+    } else {
       ansText = outputText;
+    }
 
     return ansText;
   }
 
   // 「出力:"OOO"」の形式で渡されるデータを
   // OOOだけ切り取って返却
+  // 丸かっこで囲まれた振りがなにも対応する
   String substrKeyWord(String outputText){
-    int left = outputText.indexOf('"');
-    int right = outputText.lastIndexOf('"');
+    int left;
+    int right;
+    String res = outputText;
+    
+    print("切る前 : " + res);
+    
+    // ここまとめられる
+    if(res.indexOf('"') != -1){
+      left = outputText.indexOf('"');
+      right = outputText.indexOf('"',left+1);
+      res = outputText.substring(left+1,right);
+    }
 
-    String res = outputText.substring(left+1,right);
-    print(res);
+    if(res.indexOf("「") != -1){
+      left = outputText.indexOf('「');
+      right = outputText.indexOf('」',left+1);
+      res = outputText.substring(left+1,right);
+    }
+
+    if(res.indexOf('（') != -1){
+      left = res.indexOf('（');
+      right = res.indexOf('）',left+1);
+      res = res.substring(left+1,right);
+    }
+
+    print("切った後 : " + res);
     return res;
   }
 }
