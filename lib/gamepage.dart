@@ -51,7 +51,7 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Game Page'),
+        title: const Text('あそワード'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

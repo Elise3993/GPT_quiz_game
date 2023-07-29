@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
               seedColor: const Color.fromARGB(255, 57, 162, 134)),
           useMaterial3: true,
         ),
-        home: const MyHomePage(title: 'Association Game Page'));
+        home: const MyHomePage(title: 'あそワード'));
   }
 }
 

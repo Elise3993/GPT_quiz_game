@@ -27,7 +27,7 @@ class _ResultPageState extends State<ResultPage> {
       appBar: AppBar(
         // automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Result Page'),
+        title: const Text('あそワード'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
