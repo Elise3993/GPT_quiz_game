@@ -116,6 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
                 // GPTから類似の単語を取得
                 var textOutput = await callAPI(textInput);
+
+                // var textOutput = '出力:"「音楽」"';
+
                 // textOutputを""で囲まれている部分で切り出す
                 textOutput = substrKeyWord(textOutput);
                 // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
@@ -282,12 +285,34 @@ Only One Output is Need
 
   // 「出力:"OOO"」の形式で渡されるデータを
   // OOOだけ切り取って返却
-  String substrKeyWord(String outputText) {
-    int left = outputText.indexOf('"');
-    int right = outputText.lastIndexOf('"');
+  // 丸かっこで囲まれた振りがなにも対応する
+  String substrKeyWord(String outputText){
+    int left;
+    int right;
+    String res = outputText;
+    
+    print("切る前 : " + res);
+    
+    // ここまとめられる
+    if(res.indexOf('"') != -1){
+      left = outputText.indexOf('"');
+      right = outputText.indexOf('"',left+1);
+      res = outputText.substring(left+1,right);
+    }
 
-    String res = outputText.substring(left + 1, right);
-    print(res);
+    if(res.indexOf("「") != -1){
+      left = outputText.indexOf('「');
+      right = outputText.indexOf('」',left+1);
+      res = outputText.substring(left+1,right);
+    }
+
+    if(res.indexOf('（') != -1){
+      left = res.indexOf('（');
+      right = res.indexOf('）',left+1);
+      res = res.substring(left+1,right);
+    }
+
+    print("切った後 : " + res);
     return res;
   }
 }

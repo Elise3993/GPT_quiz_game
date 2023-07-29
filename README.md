@@ -1,16 +1,12 @@
-# gpt_word_quiz
+# ぼっちワードウルフ(仮)
 
-A new Flutter project.
+【ChatGPTとワードウルフしよう！】
 
-## Getting Started
+ プレイ方法
+1.  あなたが好きな単語を一つ入力して下さい。
+2.  ChatGPTの説明があなたの入力した単語の説明か考えてください。
+3.  あなたの入力した単語だと思うなら〇、そうでなければ×を押してください。
+4.  正解かどうかが出ます。間違ってたらリトライしよう！！
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+    
