@@ -222,7 +222,7 @@ class _GamePageState extends State<GamePage> {
   // GPTの説明テキスト中のキーワードをすべて***で隠す
   String hideKeyWord(String input_str, String output_str, String gptText) {
     final random = math.Random();
-    final masks = ['***', '+++', '###', '!!!', '%%%', '&&&', '@@@'];
+    final masks = ['***'];
     final input_index = random.nextInt(masks.length);
     var output_index = random.nextInt(masks.length);
     while (input_index == output_index) {
