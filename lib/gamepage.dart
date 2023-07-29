@@ -89,77 +89,90 @@ class _GamePageState extends State<GamePage> {
             Expanded(
               flex: 1,
               child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ResultPage(
-                              isCorrect:
-                                  checkPlayersAnswer(_inputText, _ansText),
-                              inputText: _inputText,
-                              outputText: _outputText,
-                              ansText: _ansText,
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
-                        textStyle: const TextStyle(
-                          fontSize: 20,
+                    Text(
+                      'あなたの入力した単語：${widget.inputText}',
+                      style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 24),
-                        side: const BorderSide(
-                            color: Color.fromARGB(255, 255, 156, 7), width: 2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text('〇'),
+                          color: Colors.blue),
                     ),
-                    const SizedBox(width: 22), //空白みたいなやつ
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ResultPage(
-                              isCorrect:
-                                  checkPlayersAnswer(_outputText, _ansText),
-                              inputText: _inputText,
-                              outputText: _outputText,
-                              ansText: _ansText,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResultPage(
+                                  isCorrect:
+                                      checkPlayersAnswer(_inputText, _ansText),
+                                  inputText: _inputText,
+                                  outputText: _outputText,
+                                  ansText: _ansText,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red,
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 24),
+                            side: const BorderSide(
+                                color: Color.fromARGB(255, 255, 156, 7),
+                                width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
-                        textStyle: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          child: const Text('〇'),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 24),
-                        side: const BorderSide(
-                            color: Color.fromARGB(255, 29, 206, 254), width: 2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        const SizedBox(width: 22), //空白みたいなやつ
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResultPage(
+                                  isCorrect:
+                                      checkPlayersAnswer(_outputText, _ansText),
+                                  inputText: _inputText,
+                                  outputText: _outputText,
+                                  ansText: _ansText,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blue,
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 24),
+                            side: const BorderSide(
+                                color: Color.fromARGB(255, 29, 206, 254),
+                                width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.clear, // バツ印のアイコン
+                            size: 25.0, // アイコンのサイズ
+                            color: Colors.white, // アイコンの色
+                          ),
                         ),
-                      ),
-                      child: const Icon(
-                        Icons.clear, // バツ印のアイコン
-                        size: 25.0, // アイコンのサイズ
-                        color: Colors.white, // アイコンの色
-                      ),
+                      ],
                     ),
                   ],
                 ),
