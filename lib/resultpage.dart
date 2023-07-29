@@ -43,31 +43,32 @@ class _ResultPageState extends State<ResultPage> {
             Expanded(
               flex: 2,
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.black38,
                     width: 4,
                   ),
-                    borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              child: Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Text(
                       'あなたが入力した単語 : ${widget.inputText}',
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                     Text(
                       'GPTが出力した単語 : ${widget.outputText}',
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                     Text(
                       'GPTが説明した単語 : ${widget.ansText}',
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
-                  ]),
-            ),
+                  ],
+                ),
+              ),
             ),
             Expanded(
               flex: 2,

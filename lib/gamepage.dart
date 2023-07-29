@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gpt_word_quiz/resultpage.dart';
 import 'dart:math' as math;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'env/env.dart';
 
 //継承したクラスでwiget.(変数名)で取り出せる
 class GamePage extends StatefulWidget {
@@ -24,6 +28,7 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   // 伏字処理後のgptのテキスト
   String hidedGptText = "";
+  final apiKey = Env.key;
 
   // 次に送りたい変数
   late String _inputText; // プレイヤーの入力ワード
@@ -91,12 +96,15 @@ class _GamePageState extends State<GamePage> {
               child: Center(
                 child: Column(
                   children: [
-                    Text(
-                      'あなたの入力した単語：${widget.inputText}',
-                      style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'あなたの入力した単語：${widget.inputText}',
+                        style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -172,6 +180,33 @@ class _GamePageState extends State<GamePage> {
                             color: Colors.white, // アイコンの色
                           ),
                         ),
+                        const SizedBox(width: 22), //空白みたいなやつ
+                        ElevatedButton(
+                          onPressed: () async {
+                            hidedGptText = await callApiHintText(_inputText,
+                                _outputText, _ansText, hidedGptText);
+                            setState(() {
+                              hidedGptText;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 245, 161, 26),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 24),
+                            side: const BorderSide(
+                                color: Color.fromARGB(255, 248, 200, 87),
+                                width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('hint'),
+                        ),
                       ],
                     ),
                   ],
@@ -187,9 +222,12 @@ class _GamePageState extends State<GamePage> {
   // GPTの説明テキスト中のキーワードをすべて***で隠す
   String hideKeyWord(String input_str, String output_str, String gptText) {
     final random = math.Random();
-    final masks = ['***'];
+    final masks = ['***', '+++', '###', '!!!', '%%%', '&&&', '@@@'];
     final input_index = random.nextInt(masks.length);
     var output_index = random.nextInt(masks.length);
+    while (input_index == output_index) {
+      output_index = random.nextInt(masks.length);
+    }
     var input_maskedText = gptText.replaceAll(input_str, masks[input_index]);
     return input_maskedText.replaceAll(output_str, masks[output_index]);
   }
@@ -199,5 +237,50 @@ class _GamePageState extends State<GamePage> {
   // ansTextはランダムに選ばれた正解の単語
   bool checkPlayersAnswer(String chosenText, String ansText) {
     return chosenText == ansText;
+  }
+
+  Future<String> callApiHintText(
+      String apiText_1, String apiText_2, String ansText, String text) async {
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              'role': 'user',
+              'content': '''$ansTextの説明を以下の箇条書きに従って説明してください。
+                  条件:
+                  ・"$apiText_1"という単語を出力に入れないこと。
+                  ・"$apiText_2"という単語を出力に入れないこと。
+                  ・条件を出力しないでください
+                  
+                  望ましい出力例:
+                  これは以下のような特徴があります。
+                  1:***
+                  2:***
+                  3:***
+                  '''
+            },
+            {'role': 'assistant', 'content': text},
+            {'role': 'user', 'content': 'もう一行出力してください。'}
+          ]
+        },
+      ),
+    );
+    final body = response.bodyBytes;
+    final jsonString = utf8.decode(body);
+    final json = jsonDecode(jsonString);
+    final choices = json['choices'];
+    final content = choices[0]['message']['content'];
+    print(content);
+    var hidecontent = hideKeyWord(widget.inputText, widget.outputText, content);
+    var newText = '$text\n$hidecontent';
+    print(newText);
+    return newText;
   }
 }
