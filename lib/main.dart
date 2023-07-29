@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
-  
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.blue),
                 ),
               ),
-              
             ),
             Expanded(
               flex: 1,
@@ -98,17 +97,22 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _isLoading ? null : () async {
-          // ChatGPTのAPIを利用
-          setState(() {
-            _isLoading = true; // リクエスト開始時にローディングインジケータを表示
-          });
-          // GPTから類似の単語を取得
-          var textOutput = await callAPI(textInput);
-          // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
-          var textAns= chooseWord(textInput, textOutput);
-          // GPTからtextAnsについて説名してもらう
-          var chatGPTText = await callApiGameText(textInput, textOutput,textAns);
+        onPressed: _isLoading
+            ? null
+            : () async {
+                // ChatGPTのAPIを利用
+                setState(() {
+                  _isLoading = true; // リクエスト開始時にローディングインジケータを表示
+                });
+                // GPTから類似の単語を取得
+                var textOutput = await callAPI(textInput);
+                // textOutputを""で囲まれている部分で切り出す
+                textOutput = substrKeyWord(textOutput);
+                // プレイヤーが入力した単語、GPTが出力した単語のどちらかをランダムに選択する
+                var textAns = chooseWord(textInput, textOutput);
+                // GPTからtextAnsについて説名してもらう
+                var chatGPTText =
+                    await callApiGameText(textInput, textOutput, textAns);
 
           setState(() {
             FocusScope.of(context).unfocus();
@@ -127,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
-        child: const Icon(Icons.navigate_next),
+       child: const Icon(Icons.navigate_next),
       ),
       // ぐるぐるを表示する条件に応じて、この位置を調整することも可能です。
       // 例えば、`floatingActionButtonLocation` を `FloatingActionButtonLocation.endFloat` にすると、画面下部にぐるぐるが表示されます。
@@ -141,7 +145,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   Future<String> callAPI(String apiText) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
@@ -153,7 +156,52 @@ class _MyHomePageState extends State<MyHomePage> {
         <String, dynamic>{
           "model": "gpt-3.5-turbo",
           "messages": [
-            {'role': 'user', 'content': '$apiTextと似た一般名詞を一つ出力せよ'}
+            {
+              'role': 'user',
+              'content': '''
+            以下の入力に出来るだけ包含関係にある単語は避けて、意味が類似している1単語の普通名詞を答えてください。
+
+input_text:{"$apiText"}
+
+条件:
+・社会情勢に背いた単語を出力しない
+・人を差別、批判するような文章を作成しない
+・もしセンシティブなワードが入力されたら、それを侮辱的な意味を含まないようにそれを説明すること
+・1単語だけで出力してください
+・文で出力しないでください
+・以下に示す例は説明しないでください
+
+望ましい出力例:
+出力例1:"アイス"
+
+出力例2:"黒板"
+
+出力例3:"マウス"
+
+出力例4:"お米"
+
+出力例5:"殺虫剤"
+
+出力例6:"人種"
+
+出力例7:"キムチ"
+
+出力例8:"国"
+
+出力例9:"食べ物"
+
+出力例10:"デバイス"
+
+出力例11:"電子機器"
+
+出力例12:"昆虫"
+
+出力例13:"果物"
+
+Only One Output is Need
+
+'''
+            }
           ]
         },
       ),
@@ -167,7 +215,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return content;
   }
 
-  Future<String> callApiGameText(String apiText_1, String apiText_2,String ansText) async {
+  Future<String> callApiGameText(
+      String apiText_1, String apiText_2, String ansText) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: <String, String>{
@@ -180,8 +229,18 @@ class _MyHomePageState extends State<MyHomePage> {
           "messages": [
             {
               'role': 'user',
-              'content':
-                  '$ansTextの説明を書くこと。$apiText_1と$apiText_2を出力に入れないこと。どちらの単語かわからないようにすること。60トークン以上80トークン以下で出力'
+              'content': '''$ansTextの説明を以下の箇条書きに従って説明してください。
+                  条件:
+                  ・"$apiText_1"という単語を出力に入れないこと。
+                  ・"$apiText_2"という単語を出力に入れないこと。
+                  ・条件を出力しないでください
+                  
+                  望ましい出力例:
+                  これは以下のような特徴があります。
+                  1:***
+                  2:***
+                  3:***
+                  '''
             }
           ]
         },
@@ -199,14 +258,26 @@ class _MyHomePageState extends State<MyHomePage> {
   // プレイヤーが入力した単語と
   // GPTが出力した単語の
   // 2種類の内のどちらか選ぶ
-  String chooseWord(String inputText,String outputText){
+  String chooseWord(String inputText, String outputText) {
     var random = math.Random();
 
-    String ansText = ""; 
-    if(random.nextBool()) ansText = inputText; 
-    else ansText = outputText;
+    String ansText = "";
+    if (random.nextBool())
+      ansText = inputText;
+    else
+      ansText = outputText;
 
     return ansText;
   }
 
+  // 「出力:"OOO"」の形式で渡されるデータを
+  // OOOだけ切り取って返却
+  String substrKeyWord(String outputText){
+    int left = outputText.indexOf('"');
+    int right = outputText.lastIndexOf('"');
+
+    String res = outputText.substring(left+1,right);
+    print(res);
+    return res;
+  }
 }
