@@ -110,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _isLoading
             ? null
             : () async {
+                showProgressDialog(context);
                 // ChatGPTのAPIを利用
                 setState(() {
                   FocusScope.of(context).unfocus();
@@ -128,34 +129,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 var chatGPTText =
                     await callApiGameText(textInput, textOutput, textAns);
 
-          setState(() {
-            FocusScope.of(context).unfocus();
-            _isLoading = false; // リクエスト開始時にローディングインジケータを表示
-          });
-          //ボタンを押したら画面遷移
-          Navigator.push(
-            //画面はスタックになっていて重ねていくらしい
-            context, //使い方はNavigetorで調べたらすぐわかると思う
-            MaterialPageRoute(
-              builder: (context) => GamePage(
-                  inputText: textInput, //引数入れてコンストラクタで実行。引数を次のページで格納
-                  outputText: textOutput,
-                  ansText: textAns,
-                  gptText: chatGPTText),
-            ),
-          );
-        },
-       child: const Icon(Icons.navigate_next),
+                setState(() {
+                  FocusScope.of(context).unfocus();
+                  _isLoading = false; // リクエスト開始時にローディングインジケータを表示
+                });
+                if (_isLoading) Navigator.of(context).pop(); // これだと消えない。。
+                Navigator.of(context, rootNavigator: true).pop();
+                //ボタンを押したら画面遷移
+                Navigator.push(
+                  //画面はスタックになっていて重ねていくらしい
+                  context, //使い方はNavigetorで調べたらすぐわかると思う
+                  MaterialPageRoute(
+                    builder: (context) => GamePage(
+                        inputText: textInput, //引数入れてコンストラクタで実行。引数を次のページで格納
+                        outputText: textOutput,
+                        ansText: textAns,
+                        gptText: chatGPTText),
+                  ),
+                );
+              },
+        child: const Icon(Icons.navigate_next),
       ),
-      // ぐるぐるを表示する条件に応じて、この位置を調整することも可能です。
-      // 例えば、`floatingActionButtonLocation` を `FloatingActionButtonLocation.endFloat` にすると、画面下部にぐるぐるが表示されます。
-      // デフォルトは `FloatingActionButtonLocation.endFloat` です。
-      persistentFooterButtons: _isLoading
-          ? [
-              // ローディング中はぐるぐるを表示
-              CircularProgressIndicator(),
-            ]
-          : null,
     );
   }
 
@@ -215,7 +209,6 @@ input_text:{"$apiText"}
 
 Only One Output is Need
 Output is different from input
- 
 '''
             }
           ]
@@ -290,33 +283,53 @@ Output is different from input
   // 「出力:"OOO"」の形式で渡されるデータを
   // OOOだけ切り取って返却
   // 丸かっこで囲まれた振りがなにも対応する
-  String substrKeyWord(String outputText){
+  String substrKeyWord(String outputText) {
     int left;
     int right;
     String res = outputText;
-    
+
     print("切る前 : " + res);
-    
+
     // ここまとめられる
-    if(res.indexOf('"') != -1){
+    if (res.indexOf('"') != -1) {
       left = outputText.indexOf('"');
-      right = outputText.indexOf('"',left+1);
-      res = outputText.substring(left+1,right);
+      right = outputText.indexOf('"', left + 1);
+      res = outputText.substring(left + 1, right);
     }
 
-    if(res.indexOf("「") != -1){
+    if (res.indexOf("「") != -1) {
       left = outputText.indexOf('「');
-      right = outputText.indexOf('」',left+1);
-      res = outputText.substring(left+1,right);
+      right = outputText.indexOf('」', left + 1);
+      res = outputText.substring(left + 1, right);
     }
 
-    if(res.indexOf('（') != -1){
+    if (res.indexOf('（') != -1) {
       left = res.indexOf('（');
-      right = res.indexOf('）',left+1);
-      res = res.substring(left+1,right);
+      right = res.indexOf('）', left + 1);
+      res = res.substring(left + 1, right);
     }
 
     print("切った後 : " + res);
     return res;
   }
+}
+
+void showProgressDialog(context) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: false,
+    transitionDuration: Duration.zero, // これを入れると遅延を入れなくて
+    barrierColor: Colors.white,
+    pageBuilder: (BuildContext context, Animation animation,
+        Animation secondaryAnimation) {
+      return Center(
+        child: Column(
+          children: [
+            Text('ChatGPTが問題を考えています…'),
+            CircularProgressIndicator(),
+          ],
+        ),
+      );
+    },
+  );
 }

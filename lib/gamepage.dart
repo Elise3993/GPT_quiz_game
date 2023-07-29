@@ -243,9 +243,6 @@ class _GamePageState extends State<GamePage> {
     final masks = ['***'];
     final input_index = random.nextInt(masks.length);
     var output_index = random.nextInt(masks.length);
-    while (input_index == output_index) {
-      output_index = random.nextInt(masks.length);
-    }
     var input_maskedText = gptText.replaceAll(input_str, masks[input_index]);
     return input_maskedText.replaceAll(output_str, masks[output_index]);
   }
