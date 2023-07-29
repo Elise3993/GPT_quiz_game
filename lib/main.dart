@@ -213,7 +213,8 @@ input_text:{"$apiText"}
 出力例13:"果物"
 
 Only One Output is Need
-
+Output is different from input
+ 
 '''
             }
           ]
