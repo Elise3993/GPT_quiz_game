@@ -34,7 +34,8 @@ class _GamePageState extends State<GamePage> {
   late String _inputText; // プレイヤーの入力ワード
   late String _outputText; // GPTの出力ワード
   late String _ansText;
-
+  int _pressCount = 0;
+  int _maxPressCount = 5;
   @override
   void initState() {
     super.initState();
@@ -182,13 +183,14 @@ class _GamePageState extends State<GamePage> {
                         ),
                         const SizedBox(width: 22), //空白みたいなやつ
                         ElevatedButton(
-                          onPressed: () async {
+                          onPressed: (_pressCount < _maxPressCount) ? () async {
                             hidedGptText = await callApiHintText(_inputText,
                                 _outputText, _ansText, hidedGptText);
                             setState(() {
+                              _pressCount++;
                               hidedGptText;
                             });
-                          },
+                          } : null,
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Color.fromARGB(255, 245, 161, 26),
