@@ -112,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
             : () async {
                 // ChatGPTのAPIを利用
                 setState(() {
+                  FocusScope.of(context).unfocus();
                   _isLoading = true; // リクエスト開始時にローディングインジケータを表示
                 });
                 // GPTから類似の単語を取得
