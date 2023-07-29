@@ -111,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           var chatGPTText = await callApiGameText(textInput, textOutput,textAns);
 
           setState(() {
+            FocusScope.of(context).unfocus();
             _isLoading = false; // リクエスト開始時にローディングインジケータを表示
           });
           //ボタンを押したら画面遷移
